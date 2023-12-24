@@ -5,6 +5,7 @@
 ;; Author: Christopher Wellons <mosquitopsu@gmail.com>
 ;; URL: https://github.com/skeeto/emacs-memoize
 ;; Version: 1.1
+;; Package-Requires: ((emacs "26.1"))
 
 ;;; Commentary:
 
@@ -167,13 +168,13 @@ will get garbage collected."
         (buffer-to-contents-table (make-hash-table :weakness 'key))
         (contents-to-memoization-table (make-hash-table :weakness 'key)))
     (lambda (&rest args)
-      (let* ((bufhash (secure-hash 'md5 (buffer-string)))
-             (memokey (cons bufhash args))
+      (let* ((buftick (cons (current-buffer) (buffer-chars-modified-tick)))
+             (memokey (cons buftick args))
              (value (gethash memokey memoization-table)))
         (or value
             (progn
-              (puthash (current-buffer) bufhash buffer-to-contents-table)
-              (puthash bufhash memokey contents-to-memoization-table)
+              (puthash (current-buffer) buftick buffer-to-contents-table)
+              (puthash buftick memokey contents-to-memoization-table)
               (puthash memokey (apply func args) memoization-table)))))))
 
 (defmacro defmemoize-by-buffer-contents (name arglist &rest body)
