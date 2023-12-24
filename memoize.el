@@ -68,7 +68,7 @@ happens)."
   (cl-typecase func
     (symbol
      (when (get func :memoize-original-function)
-       (user-error "%s is already memoized" func))
+       (memoize-restore func))
      (put func :memoize-original-documentation (documentation func))
      (put func 'function-documentation
           (concat (documentation func) " (memoized)"))
@@ -117,6 +117,8 @@ have the same meaning as in `defun'."
   `(progn
      (defun ,name ,arglist
        ,@body)
+     (cl-remprop ',name :memoize-original-function)
+     (cl-remprop ',name :memoize-original-documentation)
      (memoize (quote ,name))))
 
 (defun memoize-by-buffer-contents (func)
