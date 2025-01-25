@@ -181,7 +181,7 @@ will get garbage collected."
   "Create a memoize'd-by-buffer-contents function. NAME, ARGLIST,
 DOCSTRING and BODY have the same meaning as in `defun'."
   (declare (indent defun))
-  `(progn
+  `(prog1
      (defun ,name ,arglist
        ,@body)
      (memoize-by-buffer-contents (quote ,name))))
